@@ -33,8 +33,51 @@ margin: 10px auto;              /*上下に余白をつけて中央に配置　*
      cursor: pointer;           /*マウスを乗せると指のマークになる*/
 }
 
+/*-----------星形描写-----------*/
+.star-shape::before{
+    content:"★";
+    color:gold;
+    display:block;
+    width:100%;
+    height:100%;
+    line-height:100%;
+    text-align:center;
+}
+
 /*-----------スタートボタンの見た目-----------*/
 #start-btn {
     font-size: 1em;             /*ボタンの文字サイズ*/
     padding: 10px 20px;         /*ボタン内の上下左右の余白（押しやすくする）*/
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: linear-gradient(-45deg, #ffeef3, #ffd3e0, #ffcad4, #fff0f5);
+  background-size: 300% 300%;
+  animation: sakuraBackground 20s ease infinite;
+  font-family: sans-serif;
+}
+
+#game-area {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  background: linear-gradient(135deg, #ffeef3, #ffd3e0, #ffcad4);
+  border: 2px solid #ffffffcc;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(255, 182, 193, 0.4);
+  overflow: hidden;
+  transition: background 0.5s ease;
+}#game-area {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  background: linear-gradient(135deg, #ffeef3, #ffd3e0, #ffcad4);
+  border: 2px solid #ffffffcc;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(255, 182, 193, 0.4);
+  overflow: hidden;
+  transition: background 0.5s ease;
 }

@@ -4,7 +4,7 @@ const gameArea = document.getElementById("game-area");
 const startButton = document.getElementById("start-btn");
 
 //ゲームの制限時間
-const timeLimit=10;
+const timeLimit=25;
 
 //-----------変数の宣言-----------
 //現在のスコアを記録する変数
@@ -36,18 +36,20 @@ function startGame () {
     document.getElementById("score-area").textContent=`スコア:0/ハイスコア:${highScore}/残り:${timeLimitCount}s`;
 
     //1秒ごとに敵を出現させる
-    gameInterval=setInterval(spawnEnemy,1000);
+    gameInterval=setInterval(()=>{
+        for(let i=0;i<3;i++){
+            spawnEnemy();
+        }
+    },1000);
 
     //★1秒立った場合
     timerInterval=setInterval(()=>{
 
-        timeLimitCount--;//残り秒数を1減らす
+       timeLimitCount--;//残り秒数を1減らす
+        
 
     //スコア表紙を更新
-    document.getElementById("score-area").textContent=`スコア:${score}/ハイスコア:${highScore}/残り:${timeLimitCount}s`;
-
-    //時間切れになったらゲーム終了
-    if(timeLimitCount <=0) {
+   if(timeLimitCount <=0) {
 
         clearInterval(gameInterval);//敵出現を止める
         clearInterval(timerInterval);//タイマーを止める
@@ -59,10 +61,19 @@ function startGame () {
             localStorage.setItem("highScore",highScore);//ブラウザに保存
         }
 
-        //最終結果を表示
-        document.getElementById("score-area").textContent=`🎉ゲーム終了！スコア:${score}/ハイスコア:${highScore}s`;
-
-      }
+     //スコア表示
+     let medal="🔰";
+     if(score>=70){
+        medal="👑神プレイヤー！";
+     }else if(score>=50){
+        medal="🏆エース！";
+     }else if(score>=20){
+        medal="🥉ナイス！";
+     }
+    
+     document.getElementById("score-area").innerHTML=
+     `🎉ゲーム終了！<br>スコア:${score}/ハイスコア:${highScore}<br>${medal}`;
+    }
     },1000);
 }
 
@@ -73,9 +84,37 @@ function spawnEnemy() {
      const enemy = document.createElement("div");
      enemy.className = "enemy";
 
-     //敵の出現位置（画面内のランダムな場所）
-     const maxX=gameArea.clientWidth-60; //敵の幅ぶん引いてる
-     const maxY=gameArea.clientHeight-60;
+     //敵のサイズをランダムに設定(20px~100px)
+     const size=Math.floor(Math.random()*50)+30;
+     enemy.style.width=size+"px";
+     enemy.style.height=size+"px";
+
+     //ランダムカラー
+     const colors=["#ff4c4c","#4cff4c","#4c4cff","#ffb84c","#b84cff"]
+     const randomColor=colors[Math.floor(Math.random()*colors.length)];
+     enemy.style.backgroundColor=randomColor;
+
+     //ランダム形状(四角、丸、星)
+     const shapes=[
+        "square","circle","square","circle",
+        "square","circle","square","circle",
+        "square","star"
+     ];
+     const shape=shapes[Math.floor(Math.random()*shapes.length)];
+     
+     if(shape==="circle"){
+        enemy.style.borderRadius="50%";
+     }else if(shape==="star"){
+        enemy.classList.add("star-shape");
+        enemy.style.backgroundColor="transparent";
+
+     //フォントサイズもサイズに応じて設定
+     enemy.style.fontSize=size+"px";
+    }
+
+     //敵の出現位置（サイズを引いて画面からはみ出ないように）
+     const maxX=gameArea.clientWidth-size; 
+     const maxY=gameArea.clientHeight-size;
      enemy.style.left=Math.random()*maxX+"px";
      enemy.style.top=Math.random()*maxY+"px";
 
@@ -83,8 +122,14 @@ function spawnEnemy() {
      enemy.addEventListener("click",()=> {
 
      gameArea.removeChild(enemy);//敵を消す
-     score++;//スコアを1加算
 
+     if(enemy.classList.contains("star-shape")){
+        score +=2;
+     }else{
+         score +=1;
+    document.getElementById("score-area").textContent=
+        `スコア:${score}/ハイスコア:${highScore}/残り:${timeLimitCount}s`;
+     }
      //ハイスコアを更新
      if(score>highScore){
         highScore=score;
@@ -115,9 +160,4 @@ document.getElementById("highscore").textContent=highScore;
 //★「スタート」ボタンが押されたらゲーム開始
 startButton.addEventListener("click",startGame);
 
-//ゲームエリアに青系グラデーション背景を設定
-document.addEventListener("DOMContentLoaded",()=>{
-    const gameArea=document.getElementById("game-area");
-    gameArea.style.background="llinear=gradient(to bottom,#2193b0,#6dd5ed)";
-});
 
